@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhoneFix Pro — Réparation Mobile</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --accent: #4f8ef7;
+    --accent2: #7c5cfc;
+    --success: #22c98e;
+    --warn: #f5a623;
+    --danger: #f45c5c;
+    --text: #f0f0f8;
+    --muted: #8888aa;
+    --dim: #555568;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(10,10,15,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .logo-icon { width: 28px; height: 28px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-btn { background: none; border: none; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: all .2s; }
+  .nav-btn:hover, .nav-btn.active { color: var(--text); background: var(--surface2); }
+  .nav-cta { background: var(--accent); color: #fff; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 8px; cursor: pointer; transition: all .2s; }
+  .nav-cta:hover { background: #6b9ef8; }
+
+  /* SECTIONS */
+  section { display: none; }
+  section.active { display: block; }
+
+  /* HERO */
+  .hero { min-height: calc(100vh - 60px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem 2rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(79,142,247,0.12); border: 1px solid rgba(79,142,247,0.25); color: var(--accent); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 100px; margin-bottom: 2rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.4rem, 6vw, 4.2rem); line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 1.25rem; max-width: 700px; }
+  .hero h1 span { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { color: var(--muted); font-size: 1.05rem; max-width: 520px; margin-bottom: 2.5rem; line-height: 1.7; }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 12px 28px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: all .2s; }
+  .btn-primary:hover { background: #6b9ef8; transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border2); padding: 12px 28px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; cursor: pointer; transition: all .2s; }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .stats-row { display: flex; gap: 3rem; margin-top: 4rem; padding-top: 3rem; border-top: 1px solid var(--border); }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text); }
+  .stat-lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+  /* SERVICES */
+  .page { padding: 3rem 2rem; max-width: 1100px; margin: 0 auto; }
+  .page-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 2rem; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .page-sub { color: var(--muted); margin-bottom: 2.5rem; }
+  .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .service-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; cursor: pointer; transition: all .25s; }
+  .service-card:hover { border-color: var(--accent); background: var(--surface2); transform: translateY(-2px); }
+  .service-icon { font-size: 28px; margin-bottom: 1rem; }
+  .service-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 1.05rem; margin-bottom: 0.4rem; }
+  .service-desc { color: var(--muted); font-size: 13.5px; margin-bottom: 1rem; }
+  .service-price { font-size: 1.3rem; font-weight: 500; color: var(--accent); }
+  .service-duration { font-size: 12px; color: var(--dim); margin-top: 4px; }
+  .select-btn { width: 100%; margin-top: 1rem; padding: 9px; background: rgba(79,142,247,0.1); color: var(--accent); border: 1px solid rgba(79,142,247,0.2); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; transition: all .2s; }
+  .select-btn:hover { background: rgba(79,142,247,0.2); }
+
+  /* BOOKING */
+  .booking-layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+  .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+  .form-section-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 1rem; margin-bottom: 1.25rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-label { display: block; font-size: 13.5px; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+  .form-input { width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: 9px; padding: 10px 13px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; transition: border .2s; outline: none; }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input option { background: var(--surface); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; position: sticky; top: 80px; height: fit-content; }
+  .summary-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 1.25rem; }
+  .summary-line { display: flex; justify-content: space-between; font-size: 14px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .summary-line:last-of-type { border-bottom: none; }
+  .summary-total { display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 600; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border2); }
+
+  /* PAYMENT */
+  .payment-section { display: none; }
+  .payment-section.show { display: block; }
+  .card-visual { background: linear-gradient(135deg, #1e2a4a, #2d1b69); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+  .card-visual::before { content: ''; position: absolute; right: -30px; top: -30px; width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+  .card-chip { width: 36px; height: 28px; background: linear-gradient(135deg, #d4af37, #f0d060); border-radius: 5px; margin-bottom: 1.5rem; }
+  .card-number { font-family: 'DM Mono', monospace; font-size: 1.1rem; letter-spacing: 0.2em; margin-bottom: 1rem; color: rgba(255,255,255,0.85); }
+  .card-footer { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.1em; }
+  .pay-btn { width: 100%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: 10px; padding: 14px; font-family: 'Syne', sans-serif; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 1rem; transition: opacity .2s; }
+  .pay-btn:hover { opacity: 0.9; }
+  .success-overlay { display: none; background: var(--surface); border: 1px solid rgba(34,201,142,0.3); border-radius: 14px; padding: 2rem; text-align: center; }
+  .success-overlay.show { display: block; }
+  .success-icon { width: 60px; height: 60px; background: rgba(34,201,142,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 1rem; }
+  .success-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--success); margin-bottom: 0.5rem; }
+
+  /* REVIEWS */
+  .reviews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 2.5rem; }
+  .review-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; }
+  .review-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+  .review-name { font-weight: 500; font-size: 14px; }
+  .review-date { color: var(--dim); font-size: 12px; }
+  .stars { color: #f5a623; font-size: 14px; margin-bottom: 0.75rem; }
+  .review-text { color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .review-tag { display: inline-block; background: rgba(79,142,247,0.1); color: var(--accent); font-size: 11px; padding: 3px 10px; border-radius: 100px; margin-top: 10px; }
+  .leave-review { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-top: 1rem; }
+  .leave-review h3 { font-family: 'Syne', sans-serif; font-weight: 600; margin-bottom: 1.25rem; }
+  .star-select { font-size: 28px; cursor: pointer; display: flex; gap: 4px; margin-bottom: 1rem; }
+  .star-select span { color: var(--dim); transition: color .15s; }
+  .star-select span.lit { color: #f5a623; }
+  .rating-summary { background: var(--surface2); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+  .rating-big { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; }
+  .rating-bars { flex: 1; }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 12px; color: var(--muted); }
+  .bar-track { flex: 1; height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--warn); border-radius: 3px; }
+
+  /* SAV */
+  .sav-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; min-height: 600px; }
+  .sav-sidebar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; }
+  .sav-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 4px; cursor: pointer; font-size: 14px; transition: background .2s; }
+  .sav-option:hover, .sav-option.active { background: var(--surface2); color: var(--accent); }
+  .sav-option-icon { font-size: 16px; }
+  .chat-container { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; }
+  .chat-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+  .agent-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .agent-info .name { font-weight: 500; font-size: 14px; }
+  .agent-info .status { font-size: 12px; color: var(--success); }
+  .chat-messages { flex: 1; padding: 1.5rem; overflow-y: auto; min-height: 400px; max-height: 480px; display: flex; flex-direction: column; gap: 12px; }
+  .msg { max-width: 75%; }
+  .msg.user { align-self: flex-end; }
+  .msg.bot { align-self: flex-start; }
+  .msg-bubble { padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.55; }
+  .msg.user .msg-bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.bot .msg-bubble { background: var(--surface2); color: var(--text); border-bottom-left-radius: 4px; }
+  .msg-time { font-size: 11px; color: var(--dim); margin-top: 4px; text-align: right; }
+  .msg.bot .msg-time { text-align: left; }
+  .typing { display: flex; gap: 5px; align-items: center; padding: 10px 14px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: bounce 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: .2s; }
+  .dot:nth-child(3) { animation-delay: .4s; }
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+  .chat-input-area { padding: 1rem; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+  .chat-input { flex: 1; background: var(--bg); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; resize: none; }
+  .chat-input:focus { border-color: var(--accent); }
+  .send-btn { background: var(--accent); border: none; border-radius: 10px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .2s; flex-shrink: 0; }
+  .send-btn:hover { opacity: 0.85; }
+  .quick-replies { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 1rem 1rem; }
+  .quick-reply { background: rgba(79,142,247,0.1); color: var(--accent); border: 1px solid rgba(79,142,247,0.2); border-radius: 100px; padding: 5px 14px; font-size: 13px; cursor: pointer; transition: all .2s; white-space: nowrap; }
+  .quick-reply:hover { background: rgba(79,142,247,0.2); }
+
+  @media (max-width: 768px) {
+    .booking-layout, .sav-layout { grid-template-columns: 1fr; }
+    .stats-row { gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+    .sav-sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showSection('home')">
+    <div class="logo-icon">📱</div>
+    PhoneFix Pro
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showSection('home', this)">Accueil</button>
+    <button class="nav-btn" onclick="showSection('services', this)">Services</button>
+    <button class="nav-btn" onclick="showSection('booking', this)">Réserver</button>
+    <button class="nav-btn" onclick="showSection('reviews', this)">Avis</button>
+    <button class="nav-btn" onclick="showSection('sav', this)">SAV</button>
+  </div>
+  <button class="nav-cta" onclick="showSection('booking'); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.nav-btn')[2].classList.add('active')">Prendre RDV</button>
+</nav>
+
+<!-- HOME -->
+<section id="home" class="active">
+  <div class="hero">
+    <div class="badge">⚡ Service rapide · Garantie 6 mois</div>
+    <h1>La réparation mobile<br><span>réinventée</span></h1>
+    <p>Votre smartphone entre de bonnes mains. Diagnostic gratuit, pièces certifiées et techniciens agréés. Réparation express en moins de 2h.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showSection('booking'); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.nav-btn')[2].classList.add('active')">Réserver une réparation</button>
+      <button class="btn-outline" onclick="showSection('services'); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.nav-btn')[1].classList.add('active')">Voir les tarifs</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">4 800+</div><div class="stat-lbl">Réparations</div></div>
+      <div class="stat"><div class="stat-num">4.9★</div><div class="stat-lbl">Note moyenne</div></div>
+      <div class="stat"><div class="stat-num">< 2h</div><div class="stat-lbl">Délai moyen</div></div>
+      <div class="stat"><div class="stat-num">6 mois</div><div class="stat-lbl">Garantie</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="page">
+    <h2 class="page-title">Nos services</h2>
+    <p class="page-sub">Tous nos prix incluent la main-d'œuvre et les pièces. Diagnostic gratuit avant intervention.</p>
+    <div class="services-grid" id="services-grid"></div>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section id="booking">
+  <div class="page">
+    <h2 class="page-title">Réserver une réparation</h2>
+    <p class="page-sub">Remplissez le formulaire ci-dessous pour planifier votre intervention.</p>
+    <div class="booking-layout">
+      <div>
+        <div class="form-card" id="booking-form-card">
+          <div class="form-section-title">Vos coordonnées</div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Prénom</label><input type="text" class="form-input" id="inp-firstname" placeholder="Jean"></div>
+            <div class="form-group"><label class="form-label">Nom</label><input type="text" class="form-input" id="inp-lastname" placeholder="Dupont"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="inp-email" placeholder="jean@email.com"></div>
+          <div class="form-group"><label class="form-label">Téléphone</label><input type="tel" class="form-input" id="inp-phone" placeholder="06 12 34 56 78"></div>
+          
+          <div class="form-section-title" style="margin-top:1.5rem">Votre appareil</div>
+          <div class="form-group">
+            <label class="form-label">Marque</label>
+            <select class="form-input" id="inp-brand">
+              <option value="">Sélectionner...</option>
+              <option>Apple (iPhone)</option><option>Samsung</option><option>Huawei</option><option>Xiaomi</option><option>OnePlus</option><option>Google Pixel</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Modèle</label><input type="text" class="form-input" id="inp-model" placeholder="ex: iPhone 15 Pro"></div>
+          <div class="form-group">
+            <label class="form-label">Type de réparation</label>
+            <select class="form-input" id="inp-service" onchange="updateSummary()">
+              <option value="" data-price="0">Sélectionner...</option>
+              <option value="Écran cassé" data-price="89">Remplacement écran — 89€</option>
+              <option value="Batterie" data-price="49">Remplacement batterie — 49€</option>
+              <option value="Connecteur de charge" data-price="59">Connecteur de charge — 59€</option>
+              <option value="Caméra" data-price="79">Réparation caméra — 79€</option>
+              <option value="Haut-parleur" data-price="45">Haut-parleur — 45€</option>
+              <option value="Bouton power/volume" data-price="39">Bouton power/volume — 39€</option>
+              <option value="Dos du téléphone" data-price="69">Remplacement dos — 69€</option>
+              <option value="Diagnostic" data-price="0">Diagnostic complet — Gratuit</option>
+            </select>
+          </div>
+
+          <div class="form-section-title" style="margin-top:1.5rem">Date & heure</div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="inp-date" onchange="updateSummary()"></div>
+            <div class="form-group">
+              <label class="form-label">Créneau</label>
+              <select class="form-input" id="inp-slot" onchange="updateSummary()">
+                <option value="">--</option><option>9h00 – 11h00</option><option>11h00 – 13h00</option><option>14h00 – 16h00</option><option>16h00 – 18h00</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Informations complémentaires</label><textarea class="form-input" rows="3" id="inp-notes" placeholder="Décrivez le problème en détail..."></textarea></div>
+          <button class="btn-primary" style="width:100%;margin-top:0.5rem;padding:13px" onclick="goToPayment()">Continuer vers le paiement →</button>
+        </div>
+
+        <!-- PAYMENT STEP -->
+        <div class="form-card payment-section" id="payment-card">
+          <div class="form-section-title">Paiement sécurisé</div>
+          <div class="card-visual">
+            <div class="card-chip"></div>
+            <div class="card-number" id="card-display">•••• •••• •••• ••••</div>
+            <div class="card-footer"><span>TITULAIRE</span><span>EXPIRE</span></div>
+          </div>
+          <div class="form-group"><label class="form-label">Numéro de carte</label><input type="text" class="form-input" id="inp-card" maxlength="19" placeholder="1234 5678 9012 3456" oninput="formatCard(this)"></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Expiration</label><input type="text" class="form-input" id="inp-expiry" maxlength="5" placeholder="MM/AA" oninput="formatExpiry(this)"></div>
+            <div class="form-group"><label class="form-label">CVV</label><input type="text" class="form-input" maxlength="3" placeholder="•••"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Titulaire</label><input type="text" class="form-input" placeholder="JEAN DUPONT"></div>
+          <button class="pay-btn" onclick="processPayment()" id="pay-btn">🔒 Payer <span id="pay-amount">0€</span></button>
+          <button class="btn-outline" style="width:100%;margin-top:10px" onclick="backToForm()">← Modifier ma réservation</button>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="success-overlay" id="success-card">
+          <div class="success-icon">✓</div>
+          <div class="success-title">Réservation confirmée !</div>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:1.5rem">Un email de confirmation a été envoyé. Votre numéro de dossier : <strong style="color:var(--text)" id="ref-num">#PF-0000</strong></p>
+          <div style="background:var(--surface2);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;text-align:left">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Résumé de votre réservation</div>
+            <div id="success-summary" style="font-size:14px;line-height:2"></div>
+          </div>
+          <button class="btn-primary" onclick="showSection('reviews'); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.nav-btn')[3].classList.add('active')">Laisser un avis</button>
+          <button class="btn-outline" style="margin-top:10px" onclick="resetBooking()">Nouvelle réservation</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="summary-card" id="booking-summary">
+          <div class="summary-title">Récapitulatif</div>
+          <div class="summary-line"><span style="color:var(--muted)">Service</span><span id="sum-service">—</span></div>
+          <div class="summary-line"><span style="color:var(--muted)">Date</span><span id="sum-date">—</span></div>
+          <div class="summary-line"><span style="color:var(--muted)">Créneau</span><span id="sum-slot">—</span></div>
+          <div class="summary-line"><span style="color:var(--muted)">Durée estimée</span><span>1h30 – 2h</span></div>
+          <div class="summary-line"><span style="color:var(--muted)">Garantie</span><span style="color:var(--success)">6 mois ✓</span></div>
+          <div class="summary-total"><span>Total</span><span id="sum-total" style="color:var(--accent)">0€</span></div>
+          <p style="font-size:12px;color:var(--dim);margin-top:12px">💳 Paiement 100% sécurisé. Pas de frais cachés.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="page">
+    <h2 class="page-title">Avis clients</h2>
+    <p class="page-sub">Ce que nos clients pensent de nous.</p>
+    <div class="rating-summary">
+      <div>
+        <div class="rating-big">4.9</div>
+        <div style="color:#f5a623;font-size:18px">★★★★★</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">342 avis</div>
+      </div>
+      <div class="rating-bars">
+        <div class="bar-row"><span>5★</span><div class="bar-track"><div class="bar-fill" style="width:87%"></div></div><span>87%</span></div>
+        <div class="bar-row"><span>4★</span><div class="bar-track"><div class="bar-fill" style="width:9%"></div></div><span>9%</span></div>
+        <div class="bar-row"><span>3★</span><div class="bar-track"><div class="bar-fill" style="width:3%"></div></div><span>3%</span></div>
+        <div class="bar-row"><span>2★</span><div class="bar-track"><div class="bar-fill" style="width:1%"></div></div><span>1%</span></div>
+        <div class="bar-row"><span>1★</span><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span>0%</span></div>
+      </div>
+    </div>
+    <div class="reviews-grid" id="reviews-grid"></div>
+    <div class="leave-review">
+      <h3>Laisser un avis</h3>
+      <div class="star-select" id="star-select">
+        <span onclick="setStars(1)">★</span><span onclick="setStars(2)">★</span><span onclick="setStars(3)">★</span><span onclick="setStars(4)">★</span><span onclick="setStars(5)">★</span>
+      </div>
+      <div class="form-row" style="margin-bottom:12px">
+        <input type="text" class="form-input" id="review-name" placeholder="Votre nom">
+        <input type="text" class="form-input" id="review-service" placeholder="Service utilisé">
+      </div>
+      <textarea class="form-input" rows="3" id="review-text" placeholder="Partagez votre expérience..." style="margin-bottom:12px"></textarea>
+      <button class="btn-primary" onclick="submitReview()">Publier mon avis</button>
+    </div>
+  </div>
+</section>
+
+<!-- SAV -->
+<section id="sav">
+  <div class="page">
+    <h2 class="page-title">Service Après-Vente</h2>
+    <p class="page-sub">Notre assistant IA est disponible 24h/24 pour répondre à vos questions.</p>
+    <div class="sav-layout">
+      <div class="sav-sidebar">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin-bottom:12px;padding:0 4px">Catégories</div>
+        <div class="sav-option active" onclick="setChatContext('general', this)"><span class="sav-option-icon">💬</span> Assistant général</div>
+        <div class="sav-option" onclick="setChatContext('suivi', this)"><span class="sav-option-icon">📦</span> Suivi de commande</div>
+        <div class="sav-option" onclick="setChatContext('garantie', this)"><span class="sav-option-icon">🛡️</span> Garantie & remboursement</div>
+        <div class="sav-option" onclick="setChatContext('technique', this)"><span class="sav-option-icon">🔧</span> Support technique</div>
+        <div class="sav-option" onclick="setChatContext('rdv', this)"><span class="sav-option-icon">📅</span> Modifier un RDV</div>
+        <div style="border-top:1px solid var(--border);margin:12px 0"></div>
+        <div style="font-size:12px;color:var(--dim);padding:0 4px">
+          <div style="margin-bottom:8px">📞 06 00 00 00 00</div>
+          <div>✉️ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="31525e5f455052457141595e5f5457584941435e1f5743">[email&#160;protected]</a></div>
+        </div>
+      </div>
+      <div class="chat-container">
+        <div class="chat-header">
+          <div class="agent-avatar">🤖</div>
+          <div class="agent-info">
+            <div class="name">PhoneFix Assistant</div>
+            <div class="status">● En ligne</div>
+          </div>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="quick-replies" id="quick-replies"></div>
+        <div class="chat-input-area">
+          <textarea class="chat-input" id="chat-input" rows="1" placeholder="Posez votre question..." onkeydown="handleKey(event)"></textarea>
+          <button class="send-btn" onclick="sendMessage()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── DATA ──
+const SERVICES = [
+  { icon:'📱', name:'Remplacement écran', desc:'Dalle OLED/LCD certifiée. Gestes tactiles et couleurs d\'origine restaurés.', price:89, time:'1h – 1h30' },
+  { icon:'🔋', name:'Remplacement batterie', desc:'Batterie haute capacité avec BMS intégré. Autonomie retrouvée.', price:49, time:'45 min' },
+  { icon:'⚡', name:'Connecteur de charge', desc:'Port USB-C ou Lightning. Chargement rapide et synchronisation rétablis.', price:59, time:'1h' },
+  { icon:'📷', name:'Réparation caméra', desc:'Module caméra avant ou arrière. Photo et vidéo comme neufs.', price:79, time:'1h – 1h30' },
+  { icon:'🔊', name:'Haut-parleur / micro', desc:'Son et microphone retrouvent leur pleine puissance.', price:45, time:'45 min' },
+  { icon:'🔘', name:'Boutons power/volume', desc:'Remplacement des boutons physiques défaillants.', price:39, time:'45 min' },
+  { icon:'🪪', name:'Remplacement dos', desc:'Face arrière en verre ou plastique selon le modèle.', price:69, time:'1h' },
+  { icon:'🔍', name:'Diagnostic gratuit', desc:'Bilan complet de votre appareil sans engagement.', price:0, time:'30 min' }
+];
+
+const REVIEWS = [
+  { name:'Sophie M.', initial:'SM', color:'#3b6de1', stars:5, text:'Service ultra rapide ! Mon iPhone 14 réparé en moins d\'une heure, comme neuf. Le technicien était très professionnel et a pris le temps d\'expliquer ce qu\'il faisait.', tag:'Écran', date:'Il y a 2 jours' },
+  { name:'Karim B.', initial:'KB', color:'#7c5cfc', stars:5, text:'Batterie changée en 45 min, prix très raisonnable. La garantie de 6 mois rassure vraiment. Je recommande sans hésiter à tous mes proches.', tag:'Batterie', date:'Il y a 5 jours' },
+  { name:'Marie-Claire F.', initial:'MC', color:'#22c98e', stars:5, text:'Connecteur de charge en rade depuis une semaine, réparé ici en une heure. Accueil chaleureux et devis transparent. Parfait !', tag:'Charge', date:'Il y a 1 semaine' },
+  { name:'Thomas L.', initial:'TL', color:'#f5a623', stars:4, text:'Très bonne prestation pour la réparation de ma caméra. Résultat impeccable. Petit bémol sur le temps d\'attente mais ça valait le coup.', tag:'Caméra', date:'Il y a 2 semaines' },
+  { name:'Amina D.', initial:'AD', color:'#f45c5c', stars:5, text:'Diagnostic gratuit très utile ! Ils ont identifié un problème de batterie que je ne soupçonnais pas. Réparation faite le jour même. Merci !', tag:'Diagnostic', date:'Il y a 3 semaines' },
+  { name:'Paul R.', initial:'PR', color:'#1d9e75', stars:5, text:'2ème réparation ici, toujours aussi satisfait. La qualité est constante et le personnel super sympa. Mon adresse de confiance pour tous mes appareils.', tag:'Écran', date:'Il y a 1 mois' }
+];
+
+let selectedStars = 0;
+let chatContext = 'general';
+let conversationHistory = [];
+
+// ── NAVIGATION ──
+function showSection(id, btn) {
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+}
+
+// ── SERVICES ──
+function renderServices() {
+  const grid = document.getElementById('services-grid');
+  grid.innerHTML = SERVICES.map(s => `
+    <div class="service-card">
+      <div class="service-icon">${s.icon}</div>
+      <div class="service-name">${s.name}</div>
+      <div class="service-desc">${s.desc}</div>
+      <div class="service-price">${s.price === 0 ? 'Gratuit' : s.price + '€'}</div>
+      <div class="service-duration">⏱ ${s.time}</div>
+      <button class="select-btn" onclick="bookService('${s.name}', ${s.price})">Réserver ce service →</button>
+    </div>
+  `).join('');
+}
+
+function bookService(name, price) {
+  showSection('booking');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn')[2].classList.add('active');
+  const sel = document.getElementById('inp-service');
+  for (let opt of sel.options) {
+    if (opt.value === name) { sel.value = name; break; }
+  }
+  updateSummary();
+}
+
+// ── BOOKING ──
+function updateSummary() {
+  const sel = document.getElementById('inp-service');
+  const opt = sel.options[sel.selectedIndex];
+  const price = parseInt(opt.dataset.price) || 0;
+  const date = document.getElementById('inp-date').value;
+  const slot = document.getElementById('inp-slot').value;
+  document.getElementById('sum-service').textContent = opt.value || '—';
+  document.getElementById('sum-date').textContent = date ? new Date(date).toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'}) : '—';
+  document.getElementById('sum-slot').textContent = slot || '—';
+  document.getElementById('sum-total').textContent = price === 0 ? 'Gratuit' : price + '€';
+}
+
+function goToPayment() {
+  const fields = ['inp-firstname','inp-lastname','inp-email','inp-phone','inp-brand','inp-model','inp-service','inp-date','inp-slot'];
+  const empty = fields.some(f => !document.getElementById(f).value);
+  if (empty) { alert('Merci de remplir tous les champs obligatoires.'); return; }
+  const sel = document.getElementById('inp-service');
+  const price = parseInt(sel.options[sel.selectedIndex].dataset.price) || 0;
+  document.getElementById('pay-amount').textContent = price === 0 ? '0€ (Gratuit)' : price + '€';
+  document.getElementById('booking-form-card').style.display = 'none';
+  document.getElementById('payment-card').classList.add('show');
+}
+
+function backToForm() {
+  document.getElementById('booking-form-card').style.display = 'block';
+  document.getElementById('payment-card').classList.remove('show');
+}
+
+function formatCard(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,16);
+  input.value = v.match(/.{1,4}/g)?.join(' ') || v;
+  document.getElementById('card-display').textContent = (v + '................').substring(0,16).match(/.{1,4}/g).join(' ').replace(/[^•\s]/g,'•').replace(/•{4}/g, v.length >= 4 ? v.substring(0,4) : '••••') || '•••• •••• •••• ••••';
+  const parts = (v + '0000000000000000').match(/.{4}/g);
+  document.getElementById('card-display').textContent = parts.slice(0,4).map((p,i) => i<2 ? p : '••••').join(' ');
+}
+
+function formatExpiry(input) {
+  let v = input.value.replace(/\D/g,'');
+  if (v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2,4);
+  input.value = v;
+}
+
+function processPayment() {
+  const btn = document.getElementById('pay-btn');
+  btn.textContent = '⏳ Traitement en cours...';
+  btn.disabled = true;
+  setTimeout(() => {
+    document.getElementById('payment-card').classList.remove('show');
+    document.getElementById('success-card').classList.add('show');
+    const ref = '#PF-' + Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('ref-num').textContent = ref;
+    const service = document.getElementById('inp-service').value;
+    const date = document.getElementById('inp-date').value;
+    const slot = document.getElementById('inp-slot').value;
+    document.getElementById('success-summary').innerHTML = `
+      <div>📱 ${service}</div>
+      <div>📅 ${date ? new Date(date).toLocaleDateString('fr-FR') : ''} · ${slot}</div>
+      <div>✅ Garantie 6 mois incluse</div>
+    `;
+  }, 2200);
+}
+
+function resetBooking() {
+  document.getElementById('success-card').classList.remove('show');
+  document.getElementById('booking-form-card').style.display = 'block';
+  document.getElementById('pay-btn').textContent = '🔒 Payer ';
+  document.getElementById('pay-btn').disabled = false;
+  ['inp-firstname','inp-lastname','inp-email','inp-phone','inp-model','inp-notes','inp-card','inp-expiry'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('inp-brand').value = '';
+  document.getElementById('inp-service').value = '';
+  document.getElementById('inp-date').value = '';
+  document.getElementById('inp-slot').value = '';
+  updateSummary();
+}
+
+// ── REVIEWS ──
+function renderReviews() {
+  const grid = document.getElementById('reviews-grid');
+  grid.innerHTML = REVIEWS.map(r => `
+    <div class="review-card">
+      <div class="review-header">
+        <div class="avatar" style="background:${r.color}22;color:${r.color}">${r.initial}</div>
+        <div><div class="review-name">${r.name}</div><div class="review-date">${r.date}</div></div>
+      </div>
+      <div class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+      <div class="review-text">${r.text}</div>
+      <div class="review-tag">${r.tag}</div>
+    </div>
+  `).join('');
+}
+
+function setStars(n) {
+  selectedStars = n;
+  document.querySelectorAll('#star-select span').forEach((s,i) => s.classList.toggle('lit', i < n));
+}
+
+function submitReview() {
+  const name = document.getElementById('review-name').value.trim();
+  const text = document.getElementById('review-text').value.trim();
+  const service = document.getElementById('review-service').value.trim();
+  if (!name || !text || !selectedStars) { alert('Merci de remplir votre nom, votre avis et de noter.'); return; }
+  const colors = ['#3b6de1','#7c5cfc','#22c98e','#f5a623','#f45c5c','#1d9e75'];
+  const color = colors[Math.floor(Math.random()*colors.length)];
+  const initial = name.split(' ').map(w=>w[0]).join('').toUpperCase().substring(0,2);
+  REVIEWS.unshift({ name, initial, color, stars: selectedStars, text, tag: service || 'Service', date: 'À l\'instant' });
+  renderReviews();
+  document.getElementById('review-name').value = '';
+  document.getElementById('review-text').value = '';
+  document.getElementById('review-service').value = '';
+  selectedStars = 0;
+  document.querySelectorAll('#star-select span').forEach(s => s.classList.remove('lit'));
+  window.scrollTo(0, document.getElementById('reviews-grid').offsetTop - 80);
+}
+
+// ── SAV CHAT ──
+const CONTEXTS = {
+  general: { greeting:'Bonjour ! Je suis l\'assistant PhoneFix Pro. Comment puis-je vous aider aujourd\'hui ?', quickReplies:['Suivi de réparation','Délais et prix','Garantie','Prendre RDV'] },
+  suivi: { greeting:'Je vais vous aider à suivre votre commande. Pouvez-vous me donner votre numéro de dossier (format #PF-XXXX) ?', quickReplies:['Je n\'ai pas mon numéro','Délai de livraison','Réparation terminée ?'] },
+  garantie: { greeting:'Notre garantie couvre 6 mois toutes pièces et main-d\'œuvre. Comment puis-je vous aider concernant votre garantie ?', quickReplies:['Faire jouer la garantie','Durée de garantie','Exclusions'] },
+  technique: { greeting:'Je suis là pour vous aider avec vos problèmes techniques. Quel est le problème rencontré ?', quickReplies:['Écran qui ne répond pas','Batterie qui ne charge pas','Caméra défaillante','Autre problème'] },
+  rdv: { greeting:'Je peux vous aider à modifier ou annuler votre rendez-vous. Quel est votre numéro de dossier ?', quickReplies:['Modifier la date','Annuler le RDV','Je n\'ai pas de numéro'] }
+};
+
+function setChatContext(ctx, el) {
+  chatContext = ctx;
+  document.querySelectorAll('.sav-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  conversationHistory = [];
+  document.getElementById('chat-messages').innerHTML = '';
+  const c = CONTEXTS[ctx];
+  addMessage('bot', c.greeting);
+  renderQuickReplies(c.quickReplies);
+}
+
+function addMessage(role, text) {
+  const el = document.createElement('div');
+  el.className = `msg ${role}`;
+  const now = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+  el.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${now}</div>`;
+  document.getElementById('chat-messages').appendChild(el);
+  el.scrollIntoView({behavior:'smooth', block:'end'});
+  conversationHistory.push({role: role === 'bot' ? 'assistant' : 'user', content: text});
+}
+
+function showTyping() {
+  const el = document.createElement('div');
+  el.className = 'msg bot'; el.id = 'typing-indicator';
+  el.innerHTML = `<div class="msg-bubble typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  document.getElementById('chat-messages').appendChild(el);
+  el.scrollIntoView({behavior:'smooth', block:'end'});
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing-indicator');
+  if (t) t.remove();
+}
+
+function renderQuickReplies(replies) {
+  const el = document.getElementById('quick-replies');
+  el.innerHTML = replies.map(r => `<button class="quick-reply" onclick="sendQuick('${r}')">${r}</button>`).join('');
+}
+
+function sendQuick(text) {
+  document.getElementById('quick-replies').innerHTML = '';
+  sendMessageText(text);
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  document.getElementById('quick-replies').innerHTML = '';
+  await sendMessageText(text);
+}
+
+async function sendMessageText(text) {
+  addMessage('user', text);
+  showTyping();
+  try {
+    const systemPrompt = `Tu es l'assistant SAV de PhoneFix Pro, une entreprise de réparation de téléphones mobiles en France. Tu réponds en français, de manière professionnelle, chaleureuse et concise. 
+    
+    Services proposés: remplacement écran (89€), batterie (49€), connecteur de charge (59€), caméra (79€), haut-parleur (45€), boutons (39€), dos (69€), diagnostic (gratuit).
+    Garantie: 6 mois sur toutes les réparations.
+    Délai moyen: 1h à 2h.
+    Contact: 06 00 00 00 00, contact@phonefixpro.fr
+    Contexte actuel: ${chatContext}
+    
+    Donne des réponses courtes et utiles. Si le client a besoin d'aide urgente, propose-lui d'appeler directement.`;
+    
+    const messages = [...conversationHistory.filter(m => m.content !== text)];
+    messages.push({role:'user', content: text});
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: systemPrompt,
+        messages: messages
+      })
+    });
+    const data = await res.json();
+    removeTyping();
+    const reply = data.content?.[0]?.text || 'Je suis désolé, je n\'ai pas pu traiter votre demande. Veuillez nous contacter directement.';
+    addMessage('bot', reply);
+    renderQuickReplies(['Autre question','Prendre RDV','Parler à un humain']);
+  } catch(e) {
+    removeTyping();
+    addMessage('bot', 'Désolé, une erreur s\'est produite. Contactez-nous au 06 00 00 00 00.');
+  }
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+// ── INIT ──
+renderServices();
+renderReviews();
+const today = new Date();
+document.getElementById('inp-date').min = today.toISOString
