@@ -56,21 +56,24 @@ jobs:
           port:     ${{ secrets.VPS_PORT || 22 }}
           script: |
             set -e
+            APP_PATH="${{ secrets.VPS_APP_PATH || '/opt/little-rocky' }}"
             echo "=== Déploiement Little Rocky $(date) ==="
 
-            cd ${{ secrets.VPS_APP_PATH || '/opt/little-rocky' }}
+            cd "$APP_PATH"
 
             # Récupérer les derniers changements
             git fetch origin
             git reset --hard origin/${{ github.ref_name }}
 
             # Activer le venv et mettre à jour les dépendances
-            source .venv/bin/activate
+            source "$APP_PATH/.venv/bin/activate"
             pip install --upgrade pip -q
-            pip install -r little-rocky/requirements.txt -q
+            pip install -r "$APP_PATH/little-rocky/requirements.txt" -q
 
             # Redémarrer le service systemd
             sudo systemctl restart little-rocky
-            sudo systemctl is-active --quiet little-rocky && echo "✓ Service redémarré OK" || echo "✗ Échec redémarrage"
+            sudo systemctl is-active --quiet little-rocky \
+              && echo "✓ Service redémarré OK" \
+              || echo "✗ Échec redémarrage"
 
             echo "=== Déploiement terminé ==="
