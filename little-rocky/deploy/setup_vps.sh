@@ -39,31 +39,30 @@ fi
 info "Installation des paquets système..."
 
 if [[ "$DISTRO" == "rhel" ]]; then
-    dnf update -y -q
-    # Python 3.11 est disponible dans AppStream sur Rocky 9
-    dnf install -y -q git python3.11 python3.11-devel \
-        gcc gcc-c++ make openssl-devel curl sudo
+    dnf install -y -q git python3 python3-devel \
+        gcc gcc-c++ make openssl-devel curl sudo unzip
 
-    # S'assurer que python3.11 est bien disponible
-    if ! command -v python3.11 &>/dev/null; then
-        info "Activation du module Python 3.11 via dnf module..."
-        dnf module enable -y python311 2>/dev/null || true
-        dnf install -y python3.11 python3.11-devel
-    fi
-
-    # pip pour python3.11 (pas toujours inclus sur RHEL)
-    if ! python3.11 -m pip --version &>/dev/null 2>&1; then
-        info "Installation de pip pour Python 3.11..."
-        curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
+    # pip pour python3 (pas toujours inclus sur RHEL/Rocky)
+    if ! python3 -m pip --version &>/dev/null 2>&1; then
+        info "Installation de pip..."
+        curl -sS https://bootstrap.pypa.io/get-pip.py | python3
     fi
 
 else
     apt-get update -q
-    apt-get install -y -q git python3.11 python3.11-venv python3.11-dev \
-        build-essential libssl-dev curl sudo
+    apt-get install -y -q git python3 python3-venv python3-dev \
+        build-essential libssl-dev curl sudo unzip
 fi
 
-PYTHON=$(command -v python3.11)
+# Trouver le meilleur Python disponible (3.12, 3.11, 3.10, fallback python3)
+PYTHON=""
+for candidate in python3.12 python3.11 python3.10 python3; do
+    if command -v "$candidate" &>/dev/null; then
+        PYTHON=$(command -v "$candidate")
+        break
+    fi
+done
+[[ -z "$PYTHON" ]] && error "Aucun Python 3 trouvé. Installez python3 et relancez."
 info "Python utilisé : $PYTHON ($($PYTHON --version))"
 
 # ── 3. Utilisateur système dédié ─────────────────────────────────────────────

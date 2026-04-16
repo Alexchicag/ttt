@@ -12,7 +12,7 @@ WorkingDirectory=/opt/little-rocky/little-rocky
 # Charge le .env automatiquement
 EnvironmentFile=/opt/little-rocky/little-rocky/.env
 
-ExecStart=/opt/little-rocky/.venv/bin/python little_rocky.py --live
+ExecStart=/opt/little-rocky/.venv/bin/python3 little_rocky.py --live
 Restart=on-failure
 RestartSec=30
 StandardOutput=journal
