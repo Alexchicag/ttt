@@ -438,12 +438,22 @@ def main() -> None:
         help="Run a single cycle and exit",
     )
     parser.add_argument(
+        "--settings",
+        action="store_true",
+        help="Open the interactive settings menu",
+    )
+    parser.add_argument(
         "--log-level",
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
         help="Logging verbosity (default: INFO)",
     )
     args = parser.parse_args()
+
+    if args.settings:
+        from settings_menu import run_settings_menu
+        run_settings_menu()
+        return
 
     _setup_logging(args.log_level)
     load_dotenv()

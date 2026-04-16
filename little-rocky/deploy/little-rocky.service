@@ -1,0 +1,29 @@
+[Unit]
+Description=Little Rocky — Polymarket Weather Trading Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=little-rocky
+Group=little-rocky
+WorkingDirectory=/opt/little-rocky/little-rocky
+
+# Charge le .env automatiquement
+EnvironmentFile=/opt/little-rocky/little-rocky/.env
+
+ExecStart=/opt/little-rocky/.venv/bin/python little_rocky.py --live
+Restart=on-failure
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=little-rocky
+
+# Sécurité
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/little-rocky/little-rocky
+
+[Install]
+WantedBy=multi-user.target
